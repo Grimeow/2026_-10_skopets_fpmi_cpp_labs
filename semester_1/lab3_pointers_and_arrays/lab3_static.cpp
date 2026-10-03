@@ -1,36 +1,46 @@
-
-// solve task with usage of
-// static arrays
 #include <iostream>
 #include <random>
 
 int const MAX_SIZE = 1000;
 
 int getValidLength();
-void inputArray(int arr[], int length);
+bool inputArray(int* arr, int length);
 bool isPalindrome(int num);
-void findTheLongestPalindromeChain(int arr[], int length, int& maxLen, int& bestStartIndex);
-void printTheLongestPalindrome(int arr[], int maxLen, int bestStartIndex);
+void findTheLongestPalindromeChain(int* arr, int length, int& maxLen, int& bestStartIndex);
+void printTheLongestPalindrome(int* arr, int maxLen, int bestStartIndex);
 
-void inputBounds(int &a, int &b);
-void printRandomArray(int arr[], int length);
-void randomArray(int arr[], int length, int a, int b);
+bool inputBounds(int &a, int &b);
+void printRandomArray(int* arr, int length);
+void randomArray(int* arr, int length, int a, int b);
 
 
 int main()
 {
 	int arr[MAX_SIZE];
+
 	int length = getValidLength();
+	if (length < 0) {
+		return 0;
+	}
 	int maxLen = 0;
 	int bestStartIndex = -1;
 
-	inputArray(arr, length);
+	if (!inputArray(arr, length)) {
+		return 0;
+	}
 	findTheLongestPalindromeChain(arr, length, maxLen, bestStartIndex);
 	printTheLongestPalindrome(arr, maxLen, bestStartIndex);
 
 	int newLength = getValidLength();
+	if (newLength < 0) {
+		return 0;
+	}
+
 	int a, b;
-	inputBounds(a, b);
+	if (!inputBounds(a, b)) {
+		return 0;
+	}
+
 	randomArray(arr, newLength, a, b);
 	printRandomArray(arr, newLength);
 	findTheLongestPalindromeChain(arr, newLength, maxLen, bestStartIndex);
@@ -46,30 +56,30 @@ int getValidLength() {
 
 	if (!(std::cin >> length)) {
 		std::cout << "Вы ввели не число";
-		std::exit(-1);
+		return -1;
 	}
 	 else if (length <= 0) {
 		std::cout << "Число должно быть положительным";
-		std::exit(-1);
+		return -2;;
 	}
 	 else if (length > MAX_SIZE){
 		std::cout << "Не хватает памяти";
-		std::exit(-1);
+		return -3;;
 	}
 	return length;
 }
 
-void inputArray(int arr[], int length) {
+bool inputArray(int* arr, int length) {
 
 	for (int i = 0; i < length; i++) {
 		std::cout << "Введите элемент массива: ";
 		
 		if (!(std::cin >> arr[i])) {
 			std::cout << "Вы ввели не число";
-			std::exit(-1);
+			return false;;
 		}
 	}
-
+	return true;
 }
 
 bool isPalindrome(int num) {
@@ -86,7 +96,7 @@ bool isPalindrome(int num) {
 	return original == reversed;
 }
 
-void findTheLongestPalindromeChain(int arr[], int length, int& maxLen, int& bestStartIndex) {
+void findTheLongestPalindromeChain(int* arr, int length, int& maxLen, int& bestStartIndex) {
 	maxLen = 0;
 	bestStartIndex = -1;
 
@@ -115,7 +125,7 @@ void findTheLongestPalindromeChain(int arr[], int length, int& maxLen, int& best
 	}
 }
 
-void printTheLongestPalindrome(int arr[], int maxLen, int bestStartIndex) {
+void printTheLongestPalindrome(int* arr, int maxLen, int bestStartIndex) {
 	if (bestStartIndex != -1) {
 		std::cout << "Самая длинная цепочка палиндромов равна " << maxLen << std::endl;
 		for (int i = bestStartIndex; i < bestStartIndex + maxLen; i++) {
@@ -129,16 +139,16 @@ void printTheLongestPalindrome(int arr[], int maxLen, int bestStartIndex) {
 
 }
 
-void inputBounds(int& a, int& b) {
+bool inputBounds(int& a, int& b) {
 	std::cout << "Введите границу массива a: ";
 	if (!(std::cin >> a)) {
 		std::cout << "Вы ввели не число";
-		std::exit(-1);
+		return false;;
 	}
 	std::cout << "Введите границу массива b: ";
 		if (!(std::cin >> b)) {
 			std::cout << "Вы ввели не число";
-			std::exit(-1);
+			return false;;
 		}
 
 	
@@ -147,15 +157,16 @@ void inputBounds(int& a, int& b) {
 		a = b;
 		b = temp;
 	}
+	return true;
 }
-void printRandomArray(int arr[], int newLength) {
+void printRandomArray(int* arr, int newLength) {
 	for (int i = 0; i < newLength; i++) {
 		std::cout << arr[i] << " ";
 	}
 	std::cout << std::endl;
 }
 
-void randomArray(int arr[], int newLength, int a, int b) {
+void randomArray(int* arr, int newLength, int a, int b) {
 	std::random_device rd;
 	std::mt19937 gen(rd());
 	std::uniform_int_distribution<> dist(a, b);
