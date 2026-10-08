@@ -23,11 +23,16 @@ int main()
 	if (length < 0) {
 		return 0;
 	}
+
 	int* arr = new int[length];
 
-	int t = inputT();
-
 	if (!inputArray(arr, length)) {
+		delete[] arr;
+		return 0;
+	}
+
+	int t = inputT();
+	if (t < 0) {
 		delete[] arr;
 		return 0;
 	}
@@ -96,10 +101,7 @@ int inputT() {
 		std::cout << "Вы ввели не число";
 		return -1;
 	}
-	else if (t < 0) {
-		return abs(t);
-	}
-	return t;
+	return abs(t);
 }
 
 bool inputArray(int* arr, int length) {
