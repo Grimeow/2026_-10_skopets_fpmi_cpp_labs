@@ -5,13 +5,15 @@ int const MAX_SIZE = 1000;
 
 int getValidLength();
 bool inputArray(int* arr, int length);
-bool isPalindrome(int num);
-void findTheLongestPalindromeChain(int* arr, int length, int& maxLen, int& bestStartIndex);
-void printTheLongestPalindrome(int* arr, int maxLen, int bestStartIndex);
+int inputT();
+void process(int* arr, int length, int t);
+void printArrray(int* arr, int length);
+
 
 bool inputBounds(int& a, int& b);
-void printRandomArray(int* arr, int length);
-void randomArray(int* arr, int length, int a, int b);
+void processForRandomArray(int* arr, int newLength, int t);
+void randomArray(int* arr, int newLength, int a, int b);
+void printRandomArray(int* arr, int newLlength);
 
 
 int main()
@@ -23,15 +25,20 @@ int main()
 	}
 	int* arr = new int[length];
 
-	int maxLen = 0;
-	int bestStartIndex = -1;
+	int t = inputT();
 
 	if (!inputArray(arr, length)) {
 		delete[] arr;
 		return 0;
 	}
-	findTheLongestPalindromeChain(arr, length, maxLen, bestStartIndex);
-	printTheLongestPalindrome(arr, maxLen, bestStartIndex);
+
+	std::cout << "Ваш исходный массив: ";
+	printArrray(arr, length);
+
+	process(arr, length, t);
+
+	std::cout << "Ваш новый массив: ";
+	printArrray(arr, length);
 
 	delete[] arr;
 
@@ -48,10 +55,15 @@ int main()
 	}
 
 	randomArray(arr, newLength, a, b);
-	printRandomArray(arr, newLength);
-	findTheLongestPalindromeChain(arr, newLength, maxLen, bestStartIndex);
-	printTheLongestPalindrome(arr, maxLen, bestStartIndex);
 
+	std::cout << "Ваш исходный рандомный массив: ";
+	printRandomArray(arr, newLength);
+
+	processForRandomArray(arr, newLength, t);
+
+	std::cout << "Ваш новый рандомный массив: ";
+	printRandomArray(arr, newLength);
+	
 	delete[] arr;
 
 	return 0;
@@ -77,6 +89,19 @@ int getValidLength() {
 	return length;
 }
 
+int inputT() {
+	int t;
+	std::cout << "введите Т: ";
+	if (!(std::cin >> t)) {
+		std::cout << "Вы ввели не число";
+		return -1;
+	}
+	else if (t < 0) {
+		return abs(t);
+	}
+	return t;
+}
+
 bool inputArray(int* arr, int length) {
 
 	for (int i = 0; i < length; i++) {
@@ -90,61 +115,24 @@ bool inputArray(int* arr, int length) {
 	return true;
 }
 
-bool isPalindrome(int num) {
-	if (num < 0) {
-		return false;
-	}
-	int original = num;
-	long reversed = 0;
-	while (num > 0) {
-		int ostatok = num % 10;
-		reversed = ostatok + reversed * 10;
-		num /= 10;
-	}
-	return original == reversed;
-}
-
-void findTheLongestPalindromeChain(int* arr, int length, int& maxLen, int& bestStartIndex) {
-	maxLen = 0;
-	bestStartIndex = -1;
-
-	int startIndex = 0;
-	int currentLen = 0;
-
-
+void process(int* arr, int length, int t) {
+	int count = 0;
 	for (int i = 0; i < length; i++) {
-		if (isPalindrome(arr[i])) {
-			if (currentLen == 0) {
-				startIndex = i;
-			}
-			currentLen++;
-		}
-		else {
-			if (currentLen > maxLen) {
-				maxLen = currentLen;
-				bestStartIndex = startIndex;
-			}
-			currentLen = 0;
+		if (abs(arr[i]) != t) {
+			arr[count] = arr[i];
+			count++;
 		}
 	}
-	if (currentLen > maxLen) {
-		maxLen = currentLen;
-		bestStartIndex = startIndex;
+	for (int i = count; i < length; i++) {
+		arr[i] = 0;
 	}
 }
 
-void printTheLongestPalindrome(int* arr, int maxLen, int bestStartIndex) {
-	if (bestStartIndex != -1) {
-		std::cout << "Самая длинная цепочка палиндромов равна " << maxLen << std::endl;
-		for (int i = bestStartIndex; i < bestStartIndex + maxLen; i++) {
-			std::cout << arr[i] << " ";
-		}
-		std::cout << std::endl;
+void printArrray(int* arr, int length) {
+	for (int i = 0; i < length; i++) {
+		std::cout << arr[i] << " ";
 	}
-	else {
-		std::cout << "В массиве нет ни одного палиндрома\n";
-	}
-
+	std::cout << std::endl;
 }
 
 bool inputBounds(int& a, int& b) {
@@ -167,12 +155,6 @@ bool inputBounds(int& a, int& b) {
 	}
 	return true;
 }
-void printRandomArray(int* arr, int newLength) {
-	for (int i = 0; i < newLength; i++) {
-		std::cout << arr[i] << " ";
-	}
-	std::cout << std::endl;
-}
 
 void randomArray(int* arr, int newLength, int a, int b) {
 	std::random_device rd;
@@ -182,4 +164,24 @@ void randomArray(int* arr, int newLength, int a, int b) {
 	for (int i = 0; i < newLength; i++) {
 		arr[i] = dist(gen);
 	}
+}
+
+void processForRandomArray(int* arr, int newLength, int t) {
+	int count = 0;
+	for (int i = 0; i < newLength; i++) {
+		if (abs(arr[i]) != t) {
+			arr[count] = arr[i];
+			count++;
+		}
+	}
+	for (int i = count; i < newLength; i++) {
+		arr[i] = 0;
+	}
+}
+
+void printRandomArray(int* arr, int newLength) {
+	for (int i = 0; i < newLength; i++) {
+		std::cout << arr[i] << " ";
+	}
+	std::cout << std::endl;
 }
