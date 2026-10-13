@@ -1,149 +1,101 @@
 #include <iostream>
 #include <random>
 
-int const MAX_SIZE = 1000;
-
-int getValidLength();
-bool inputArray(int* arr, int length);
-int inputT();
-void process(int* arr, int length, int t);
-void printArrray(int* arr, int length);
-
-
+const int NMAX = 100;
+int inputLength();
 bool inputBounds(int& a, int& b);
-void processForRandomArray(int* arr, int newLength, int t);
-void randomArray(int* arr, int newLength, int a, int b);
-void printRandomArray(int* arr, int newLlength);
+void sortArray(int* arr, int length, int a, int b);
+
+bool inputBoundsForRandomArray(int& start, int& end);
+void printRandomArray(int* arr, int newLength, int start, int end);
 
 
-int main()
-{
-
-	int length = getValidLength();
+int main() {
+	int a = 0;
+	int b = 0;
+	int length = inputLength();
 	if (length < 0) {
 		return 0;
 	}
-
 	int* arr = new int[length];
 
-	if (!inputArray(arr, length)) {
-		delete[] arr;
-		return 0;
+	for (int i = 0; i < length; i++) {
+		std::cout << "Введите элемент массива: ";
+		std::cin >> arr[i];
 	}
 
-	int t = inputT();
-	if (t < 0) {
-		delete[] arr;
-		return 0;
-	}
-
-	std::cout << "Ваш исходный массив: ";
-	printArrray(arr, length);
-
-	process(arr, length, t);
-
-	std::cout << "Ваш новый массив: ";
-	printArrray(arr, length);
-
-	delete[] arr;
-
-	int newLength = getValidLength();
-	if (newLength < 0) {
-		return 0;
-	}
-	arr = new int[newLength];
-
-	int a, b;
 	if (!inputBounds(a, b)) {
 		delete[] arr;
 		return 0;
 	}
 
-	randomArray(arr, newLength, a, b);
-
-	std::cout << "Ваш исходный рандомный массив: ";
-	printRandomArray(arr, newLength);
-
-	processForRandomArray(arr, newLength, t);
-
-	std::cout << "Ваш новый рандомный массив: ";
-	printRandomArray(arr, newLength);
+	std::cout << "Ваш исходный массив: ";
+	for (int i = 0; i < length; i++) {
+		std::cout << arr[i] << " ";
+	}
+	std::cout << std::endl;
 	
+	sortArray(arr, length, a, b);
+
+	std::cout << "Новый массив: ";
+	for (int i = 0; i < length; i++) {
+		std::cout << arr[i] << " ";
+	}
+	std::cout << std::endl;
+
 	delete[] arr;
 
+	int newLength = inputLength();
+	if (newLength < 0) {
+		return 0;
+	}
+	arr = new int[newLength];
+
+	int start = 0;
+	int end = 0;
+	if (!inputBoundsForRandomArray(start, end)) {
+		delete[] arr;
+		return 0;
+	}
+
+	printRandomArray(arr, newLength, start, end);
+	sortArray(arr, newLength, a, b);
+	
+	std::cout << "Новый массив: ";
+	for (int i = 0; i < newLength; i++) {
+		std::cout << arr[i] << " ";
+	}
+	std::cout << std::endl;
+
+	delete[] arr;
 	return 0;
 }
 
-
-int getValidLength() {
+int inputLength() {
 	int length;
-	std::cout << "Введите количество элементов массива: ";
-
+	std::cout << "Введите длину массива: ";
 	if (!(std::cin >> length)) {
 		std::cout << "Вы ввели не число";
 		return -1;
 	}
 	else if (length <= 0) {
 		std::cout << "Число должно быть положительным";
-		return -2;;
+		return -2;
 	}
-	else if (length > MAX_SIZE) {
+	else if (length > NMAX) {
 		std::cout << "Не хватает памяти";
-		return -3;;
+		return -3;
 	}
 	return length;
 }
 
-int inputT() {
-	int t;
-	std::cout << "введите Т: ";
-	if (!(std::cin >> t)) {
-		std::cout << "Вы ввели не число";
-		return -1;
-	}
-	return abs(t);
-}
-
-bool inputArray(int* arr, int length) {
-
-	for (int i = 0; i < length; i++) {
-		std::cout << "Введите элемент массива: ";
-
-		if (!(std::cin >> arr[i])) {
-			std::cout << "Вы ввели не число";
-			return false;;
-		}
-	}
-	return true;
-}
-
-void process(int* arr, int length, int t) {
-	int count = 0;
-	for (int i = 0; i < length; i++) {
-		if (abs(arr[i]) != t) {
-			arr[count] = arr[i];
-			count++;
-		}
-	}
-	for (int i = count; i < length; i++) {
-		arr[i] = 0;
-	}
-}
-
-void printArrray(int* arr, int length) {
-	for (int i = 0; i < length; i++) {
-		std::cout << arr[i] << " ";
-	}
-	std::cout << std::endl;
-}
-
 bool inputBounds(int& a, int& b) {
-	std::cout << "Введите границу массива a: ";
+	std::cout << "Введите  границу a: ";
 	if (!(std::cin >> a)) {
 		std::cout << "Вы ввели не число";
 		return false;;
 	}
-	std::cout << "Введите границу массива b: ";
+	std::cout << "Введите границу b: ";
 	if (!(std::cin >> b)) {
 		std::cout << "Вы ввели не число";
 		return false;;
@@ -158,30 +110,54 @@ bool inputBounds(int& a, int& b) {
 	return true;
 }
 
-void randomArray(int* arr, int newLength, int a, int b) {
+void sortArray(int* arr, int length, int a, int b) {
+	int pos = 0;
+
+	for (int i = 0; i < length; i++) {
+		if (arr[i] < a || arr[i] > b) {
+			if (i > pos) {
+				int temp = arr[i];
+				for (int j = i; j > pos; j--) {
+					arr[j] = arr[j - 1];
+				}
+				arr[pos] = temp;
+			}
+
+			pos++;
+		}
+	}
+}
+bool inputBoundsForRandomArray(int& start, int& end) {
+	std::cout << "Введите начало диапазона чисел рандомного массива: ";
+	if (!(std::cin >> start)) {
+		std::cout << "Вы ввели не число";
+		return false;;
+	}
+	std::cout << "Введите конец диапазона чисел рандомного массива: ";
+	if (!(std::cin >> end)) {
+		std::cout << "Вы ввели не число";
+		return false;;
+	}
+
+
+	if (start > end) {
+		int temp = start;
+		start = end;
+		end = temp;
+	}
+	return true;
+}
+void printRandomArray(int* arr, int newLength, int start, int end) {
+	std::cout << "Ваш исходный рандомный массив: ";
 	std::random_device rd;
 	std::mt19937 gen(rd());
-	std::uniform_int_distribution<> dist(a, b);
+	std::uniform_int_distribution<> dist(start, end);
 
 	for (int i = 0; i < newLength; i++) {
 		arr[i] = dist(gen);
 	}
-}
 
-void processForRandomArray(int* arr, int newLength, int t) {
-	int count = 0;
-	for (int i = 0; i < newLength; i++) {
-		if (abs(arr[i]) != t) {
-			arr[count] = arr[i];
-			count++;
-		}
-	}
-	for (int i = count; i < newLength; i++) {
-		arr[i] = 0;
-	}
-}
-
-void printRandomArray(int* arr, int newLength) {
+	std::cout << "Ваш исходный массив: ";
 	for (int i = 0; i < newLength; i++) {
 		std::cout << arr[i] << " ";
 	}
